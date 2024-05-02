@@ -4,7 +4,7 @@ let noteText;
 let saveNoteBtn;
 let newNoteBtn;
 let noteList;
-
+// Connects to a series of elements in notes.html
 if (window.location.pathname === '/notes') {
   noteForm = document.querySelector('.note-form');
   noteTitle = document.querySelector('.note-title');
@@ -28,6 +28,8 @@ const hide = (elem) => {
 // activeNote is used to keep track of the note in the textarea
 let activeNote = {};
 
+// Sends a GET fetch request to endpoint /api/notes
+// ToDo: Make a GET route to receive this
 const getNotes = () =>
   fetch('/api/notes', {
     method: 'GET',
@@ -36,6 +38,9 @@ const getNotes = () =>
     }
   });
 
+// Called from handleNoteSave after title and text is input
+// Sends a POST fetch request with new note data to endpoint /api/notes
+// ToDo: Make a POST route to receive this
 const saveNote = (note) =>
   fetch('/api/notes', {
     method: 'POST',
@@ -45,6 +50,8 @@ const saveNote = (note) =>
     body: JSON.stringify(note)
   });
 
+// Sends a DELETE fetch request to endpoint /api/notes/that specific id
+// ToDo: Figure out how to receive this 
 const deleteNote = (id) =>
   fetch(`/api/notes/${id}`, {
     method: 'DELETE',
@@ -53,16 +60,24 @@ const deleteNote = (id) =>
     }
   });
 
+// Called from handleNoteSave after sending new note object to POST fetch function,
+// or from handleNoteDelete after deleting selected note,
+// or from handleNoteView after setting and displaying active note,
+// or from handleNewNoteView after setting activeNote back to an empty object and preparing to accept new input
 const renderActiveNote = () => {
+// Hides the save note and clear form buttons
   hide(saveNoteBtn);
   hide(clearBtn);
-
+// If there is an active note, shows the new note button, makes the input fields read only, 
+// and sets the value of the input fields to their counterpart property in the activeNote object
   if (activeNote.id) {
     show(newNoteBtn);
     noteTitle.setAttribute('readonly', true);
     noteText.setAttribute('readonly', true);
     noteTitle.value = activeNote.title;
     noteText.value = activeNote.text;
+// If there isn't an active note, hides the new note button, makes the input fields editable,
+// and clears them of text
   } else {
     hide(newNoteBtn);
     noteTitle.removeAttribute('readonly');
@@ -72,11 +87,14 @@ const renderActiveNote = () => {
   }
 };
 
+// Called from event listener on Save Note button
 const handleNoteSave = () => {
+  // Stores the input from title and text input in an object
   const newNote = {
     title: noteTitle.value,
     text: noteText.value
   };
+  // Sends object to POST fetch function
   saveNote(newNote).then(() => {
     getAndRenderNotes();
     renderActiveNote();
@@ -87,14 +105,14 @@ const handleNoteSave = () => {
 const handleNoteDelete = (e) => {
   // Prevents the click listener for the list from being called when the button inside of it is clicked
   e.stopPropagation();
-
+// Gets the id of the clicked note
   const note = e.target;
   const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).id;
 
   if (activeNote.id === noteId) {
     activeNote = {};
   }
-
+// Sends the note id to DELETE fetch function
   deleteNote(noteId).then(() => {
     getAndRenderNotes();
     renderActiveNote();
@@ -108,7 +126,7 @@ const handleNoteView = (e) => {
   renderActiveNote();
 };
 
-// Sets the activeNote to and empty object and allows the user to enter a new note
+// Sets the activeNote to an empty object and allows the user to enter a new note
 const handleNewNoteView = (e) => {
   activeNote = {};
   show(clearBtn);
@@ -184,6 +202,7 @@ const renderNoteList = async (notes) => {
 // Gets notes from the db and renders them to the sidebar
 const getAndRenderNotes = () => getNotes().then(renderNoteList);
 
+// Creates event listeners on the various buttons if the page is on notes.html
 if (window.location.pathname === '/notes') {
   saveNoteBtn.addEventListener('click', handleNoteSave);
   newNoteBtn.addEventListener('click', handleNewNoteView);
