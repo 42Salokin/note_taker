@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const uuid = require('../helpers/uuid');
-const { readFromFile, writeToFile, readAndAppend } = require('../helpers/fsUtils');
+const { readFromFile, readAndAppend, readDeleteAndAppend } = require('../helpers/fsUtils');
 
 
 
@@ -34,6 +34,26 @@ router.post('/notes', (req, res) => {
       res.json('Error in posting feedback');
     }
   });
+
+router.delete('/notes/:id', (req, res) => {
+    console.log(`${req.method} received`);
+    const noteID = req.params.id;
+        if (noteID) {
+            console.log('checking delete...');
+
+            readDeleteAndAppend(noteID, './db/db.json')
+            console.log(`Note ${noteID} deleted successfully`);
+
+            res.json({ ok:true });
+        } else {
+            res.status(500).json({ error: 'Note not deleted'});
+        };
+        // } else {
+        //     res.status(404).json({ error: 'Note not found'});
+        //     console.log('Note not found');
+        // }
+    });
 // Make DELETE route to receive query param with unique id of note to be deleted,
 // read all notes from db.json, delete note with that id, and rewrite all remaining notes back to json
 module.exports = router;
+
