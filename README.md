@@ -4,6 +4,8 @@
 
   This application allows the user to write and save notes. It utilizes a standard front end with HTML, CSS, and Javascript, which connects to an Express.js back end and a JSON file for data storage. The user will be presented with the option to create a new note, or to display a previously created note from a list in the sidebar. Upon creating a new note, the note will be added to the sidebar list, and can be reselected and displayed. Any notes in the sidebar can also be deleted.
 
+  Visit the live site at https://note-taker-rgfr.onrender.com/
+
   ## Table of Contents
 
   * [Installation](#installation)
